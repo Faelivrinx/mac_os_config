@@ -1,0 +1,33 @@
+---
+# Ensure Docker CLI is installed
+- name: Install Docker CLI via Homebrew
+  homebrew:
+    name: docker
+    state: present
+
+# Ensure Docker Compose is installed
+- name: Install Docker Compose via Homebrew
+  homebrew:
+    name: docker-compose
+    state: present
+
+# Ensure Colima is installed
+- name: Install Colima via Homebrew
+  homebrew:
+    name: colima
+    state: present
+
+# Start Colima with Docker runtime
+- name: Start Colima with default Docker runtime
+  shell: |
+    colima start --runtime docker
+  args:
+    creates: ~/.colima
+  register: colima_start_result
+
+# Verify Colima is running
+- name: Verify Colima is running
+  shell: |
+    colima status
+  register: colima_status
+  changed_when: false

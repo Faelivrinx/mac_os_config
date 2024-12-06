@@ -1,0 +1,54 @@
+---
+# Ensure Zsh is installed
+- name: Ensure ZSH is installed
+  homebrew:
+    name: zsh
+    state: present
+  when: ansible_os_family == "Darwin"
+
+# Check if Zsh is the default shell
+- name: Check if Zsh is the default shell
+  shell: echo $SHELL
+  register: current_shell
+
+# Set Zsh as the default shell if not already set
+- name: Set Zsh as the default shell
+  command: chsh -s /bin/zsh
+  when: current_shell.stdout != "/bin/zsh"
+
+# Check if 'zap' command is available
+- name: Check if ZAP Plugin Manager is installed
+  command: which zap
+  register: zap_check
+  ignore_errors: true
+
+# Install ZAP Plugin Manager if the 'zap' command is not available
+- name: Install ZAP Plugin Manager
+  shell: |
+    curl -s https://raw.githubusercontent.com/zap-zsh/zap/master/install.zsh | zsh -s -- -branch release-v1 --keep
+  when: zap_check.rc not in [0, 1]
+  register: zap_install_result
+  changed_when: zap_install_result.rc == 0
+
+# Replace existing .zshrc with the custom one
+- name: Deploy custom .zshrc file
+  copy:
+    src: custom_zshrc
+    dest: ~/.zshrc
+    mode: "0644"
+
+# Add custom aliases and exports to Zsh configuration
+- name: Add aliases.zsh to Zsh configuration
+  copy:
+    src: aliases.zsh
+    dest: ~/.config/zsh/aliases.zsh
+
+- name: Add exports.zsh to Zsh configuration
+  copy:
+    src: exports.zsh
+    dest: ~/.config/zsh/exports.zsh
+
+# Reload Zsh configuration
+- name: Reload Zsh configuration
+  shell: exec zsh
+  changed_when: false

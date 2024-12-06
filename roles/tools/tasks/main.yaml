@@ -1,0 +1,49 @@
+---
+# Ensure curl is installed
+- name: Ensure curl is installed
+  homebrew:
+    name: curl
+    state: present
+  when: ansible_os_family == "Darwin"
+
+# Ensure SDKMAN! is installed
+- name: Check if SDKMAN! is installed
+  stat:
+    path: ~/.sdkman/bin/sdkman-init.sh
+  register: sdkman_installed
+
+- name: Install SDKMAN!
+  shell: |
+    curl -s "https://get.sdkman.io" | bash
+  when: not sdkman_installed.stat.exists
+
+# Ensure SDKMAN! is initialized in .zshrc
+- name: Add SDKMAN! initialization to .config/zsh/exports.zsh
+  lineinfile:
+    path: ~/.config/zsh/exports.zsh
+    line: '[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"'
+    state: present
+
+# Ensure NVM is installed
+- name: Check if NVM is installed
+  stat:
+    path: ~/.nvm/nvm.sh
+  register: nvm_installed
+
+- name: Install NVM
+  shell: |
+    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+  when: not nvm_installed.stat.exists
+
+# Ensure NVM is initialized in .zshrc
+- name: Add NVM initialization to .config/zsh/exports.zsh
+  lineinfile:
+    path: ~/.config/zsh.exports.zsh
+    line: |
+      export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")" [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+    state: present
+
+# Reload Zsh configuration
+- name: Reload Zsh configuration
+  shell: exec zsh
+  changed_when: false

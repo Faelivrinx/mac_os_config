@@ -1,0 +1,15 @@
+---
+# List of packages to install with Homebrew
+homebrew_packages:
+  - git
+  - unzip
+  - zip
+  - wget
+  - curl
+  - python3
+  - ansible
+  - iterm2
+  - zsh
+  - fzf
+  - zoxide
+  - lazygit
