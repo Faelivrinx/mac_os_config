@@ -18,3 +18,10 @@
     name: "{{ item }}"
     state: present
   loop: "{{ homebrew_packages }}"
+
+# Install UI applications using Homebrew Cask
+- name: Install UI Applications
+  homebrew_cask:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ ui_apps }}"

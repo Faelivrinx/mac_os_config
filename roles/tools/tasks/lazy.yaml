@@ -1,0 +1,35 @@
+---
+# Check if LazyVim is installed
+- name: Check if LazyVim is installed
+  stat:
+    path: ~/.config/nvim
+  register: lazyvim_installed
+
+# Install LazyVim
+- name: Install LazyVim
+  shell: |
+    git clone https://github.com/LazyVim/starter ~/.config/nvim
+    rm -rf ~/.config/nvim/.git
+  when: not lazyvim_installed.stat.exists
+
+# Ensure Neovim is installed (dependency for LazyVim)
+- name: Ensure Neovim is installed
+  homebrew:
+    name: neovim
+    state: present
+
+# Copy the config folder
+- name: Copy config folder for LazyVim
+  copy:
+    src: "config"
+    dest: "~/.config/nvim/lua/config"
+    mode: "0755"
+  when: not lazyvim_installed.stat.exists
+
+# Copy the config folder
+- name: Copy plugins folder for LazyVim
+  copy:
+    src: "plugins"
+    dest: "~/.config/nvim/lua/plugins"
+    mode: "0755"
+  when: not lazyvim_installed.stat.exists

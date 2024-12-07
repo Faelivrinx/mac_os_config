@@ -38,7 +38,7 @@
 # Ensure NVM is initialized in .zshrc
 - name: Add NVM initialization to .config/zsh/exports.zsh
   lineinfile:
-    path: ~/.config/zsh.exports.zsh
+    path: ~/.config/zsh/exports.zsh
     line: |
       export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")" [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
     state: present
@@ -47,3 +47,7 @@
 - name: Reload Zsh configuration
   shell: exec zsh
   changed_when: false
+
+  # Include LazyVim installation tasks
+- name: Include LazyVim installation tasks
+  import_tasks: lazy.yaml

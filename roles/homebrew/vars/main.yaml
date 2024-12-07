@@ -13,3 +13,10 @@ homebrew_packages:
   - fzf
   - zoxide
   - lazygit
+  - ripgrep
+  - fd
+
+ui_apps:
+  - spotify
+  - visual-studio-code
+  # - arc
